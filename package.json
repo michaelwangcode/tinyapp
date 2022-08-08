@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/michaelwangcode/tinyapp/issues"
   },
-  "homepage": "https://github.com/michaelwangcode/tinyapp#readme"
+  "homepage": "https://github.com/michaelwangcode/tinyapp#readme",
+  "dependencies": {
+    "express": "^4.18.1"
+  }
 }
