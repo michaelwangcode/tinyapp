@@ -34,7 +34,7 @@ function generateRandomString() {
   return randomString;
 }
 
-
+// Home page
 app.get("/", (req, res) => {
   res.send("Hello!");
 });
@@ -61,18 +61,6 @@ app.get("/urls/:id", (req, res) => {
   res.render("urls_show", templateVars);
 });
 
-app.post("/urls", (req, res) => {
-  console.log(req.body); // Log the POST request body to the console
-
-  // Generate random string
-  let shortURL = generateRandomString();
-
-  // Store the long URL in the database with a random string
-  urlDatabase[shortURL] = req.body.longURL;
-
-  // Redirect to the page with the short URL
-  res.redirect(`/urls/${shortURL}`); 
-});
 
 
 app.get("/u/:id", (req, res) => {
@@ -86,6 +74,34 @@ app.get("/u/:id", (req, res) => {
   // Redirect to the long URL
   res.redirect(longURL);
 });
+
+
+app.post("/urls/:id/delete", (req, res) => {
+
+  // Store the id of a URL
+  let id = req.params.id;
+
+  // Delete the id and URL from the database
+  delete urlDatabase[id];
+
+  // Redirect to the urls page
+  res.redirect('/urls');
+});
+
+
+app.post("/urls", (req, res) => {
+  console.log(req.body); // Log the POST request body to the console
+
+  // Generate random string
+  let shortURL = generateRandomString();
+
+  // Store the long URL in the database with a random string
+  urlDatabase[shortURL] = req.body.longURL;
+
+  // Redirect to the page with the short URL
+  res.redirect(`/urls/${shortURL}`); 
+});
+
 
 
 app.listen(PORT, () => {
