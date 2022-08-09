@@ -62,7 +62,6 @@ app.get("/urls/:id", (req, res) => {
 });
 
 
-
 app.get("/u/:id", (req, res) => {
 
   // Store the short URL ID in a variable
@@ -94,13 +93,12 @@ app.post("/urls/:id", (req, res) => {
   // Store the id of a URL
   let id = req.params.id;
 
+  // Set the longURL to the new longURL
+  urlDatabase[id] = req.body.longURL;
+
   // Redirect to the page with the short URL
-  res.redirect(`/urls/${id}`); 
+  res.redirect(`/urls/`); 
 });
-
-
-
-
 
 
 app.post("/urls", (req, res) => {
