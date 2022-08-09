@@ -16,7 +16,7 @@ const urlDatabase = {
 function generateRandomString() {
 
   // Store all letters
-  let letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  let letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
   // Create string to hold random letters
   let randomString = "";
@@ -24,8 +24,8 @@ function generateRandomString() {
   // Loop 6 times
   for (let i = 1; i <= 6; i++) {
 
-    // Return a random number between 0 and 51
-    let index = Math.floor(Math.random() * 51) + 1;
+    // Return a random number between 0 and 61
+    let index = Math.floor(Math.random() * 61) + 1;
 
     // Add the letter at the random index to the string
     randomString += letters[index];
@@ -63,8 +63,30 @@ app.get("/urls/:id", (req, res) => {
 
 app.post("/urls", (req, res) => {
   console.log(req.body); // Log the POST request body to the console
-  res.send("Ok"); // Respond with 'Ok' (we will replace this)
+
+  // Generate random string
+  let shortURL = generateRandomString();
+
+  // Store the long URL in the database with a random string
+  urlDatabase[shortURL] = req.body.longURL;
+
+  // Redirect to the page with the short URL
+  res.redirect(`/urls/${shortURL}`); 
 });
+
+
+app.get("/u/:id", (req, res) => {
+
+  // Store the short URL ID in a variable
+  let shortURL = req.params.id;
+
+  // Get the long URL from the database
+  const longURL = urlDatabase[shortURL].longURL;
+
+  // Redirect to the long URL
+  res.redirect(longURL);
+});
+
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
