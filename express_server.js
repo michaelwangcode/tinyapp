@@ -66,10 +66,10 @@ app.get("/urls/:id", (req, res) => {
 app.get("/u/:id", (req, res) => {
 
   // Store the short URL ID in a variable
-  let shortURL = req.params.id;
+  let id = req.params.id;
 
   // Get the long URL from the database
-  const longURL = urlDatabase[shortURL].longURL;
+  const longURL = urlDatabase[id];
 
   // Redirect to the long URL
   res.redirect(longURL);
@@ -89,17 +89,31 @@ app.post("/urls/:id/delete", (req, res) => {
 });
 
 
+app.post("/urls/:id", (req, res) => {
+
+  // Store the id of a URL
+  let id = req.params.id;
+
+  // Redirect to the page with the short URL
+  res.redirect(`/urls/${id}`); 
+});
+
+
+
+
+
+
 app.post("/urls", (req, res) => {
   console.log(req.body); // Log the POST request body to the console
 
   // Generate random string
-  let shortURL = generateRandomString();
+  let id = generateRandomString();
 
   // Store the long URL in the database with a random string
-  urlDatabase[shortURL] = req.body.longURL;
+  urlDatabase[id] = req.body.longURL;
 
-  // Redirect to the page with the short URL
-  res.redirect(`/urls/${shortURL}`); 
+  // Redirect to the page with the URL ID
+  res.redirect(`/urls/${id}`); 
 });
 
 
