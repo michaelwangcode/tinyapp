@@ -8,9 +8,24 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser()); // Needed to use cookieParser
 
 
+// Database object for storing urls
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
+};
+
+// Database object for storing user info
+const users = {
+  userRandomID: {
+    id: "userRandomID",
+    email: "user@example.com",
+    password: "purple-monkey-dinosaur",
+  },
+  user2RandomID: {
+    id: "user2RandomID",
+    email: "user2@example.com",
+    password: "dishwasher-funk",
+  },
 };
 
 
@@ -19,37 +34,41 @@ function generateRandomString() {
 
   // Store all letters
   let letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  let resultString = "";
 
-  // Create string to hold random letters
-  let randomString = "";
-
-  // Loop 6 times
+  // Loop six times and add a random letter to the result string
   for (let i = 1; i <= 6; i++) {
 
     // Return a random number between 0 and 61
     let index = Math.floor(Math.random() * 61) + 1;
-
-    // Add the letter at the random index to the string
-    randomString += letters[index];
+    resultString += letters[index];
   }
 
-  return randomString;
+  return resultString;
 }
+
+
+//---------- GET ROUTES ----------//
 
 // Home page
 app.get("/", (req, res) => {
   res.send("Hello!");
 });
 
+
+// URLs as JSON page
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
 
+
+// Hello page
 app.get("/hello", (req, res) => {
   res.send("<html><body>Hello <b>World</b></body></html>\n");
 });
 
 
+// Registration page
 app.get("/register", (req, res) => {
 
   // Render the register.ejs page
@@ -57,37 +76,46 @@ app.get("/register", (req, res) => {
 });
 
 
+// URL Page with all URLs for the user
 app.get("/urls", (req, res) => {
 
-  // Allow access to the username stored in cookies
+  // Store the username and the urlDatabase in templateVars
+  // The entire database is stored so it can be displayed in the URLs page
   const templateVars = { 
     username: req.cookies["username"],
     urls: urlDatabase 
   };
+
+  // Render the /urls page by passing the data in templateVars
   res.render("urls_index", templateVars);
 });
 
+
+// New URL page
 app.get("/urls/new", (req, res) => {
 
-  // Allow access to the username stored in cookies
+  // Store the username stored in cookies
   const templateVars = { 
     username: req.cookies["username"],
-    //urls: urlDatabase 
   };
+
+  // Render the /urls/new page by passing the data in templateVars
   res.render("urls_new", templateVars);
-  //res.render("urls_new");
 });
 
+
+// Page for editing shortened URL
 app.get("/urls/:id", (req, res) => {
   const templateVars = { id: req.params.id, longURL: urlDatabase[req.params.id] };
   res.render("urls_show", templateVars);
 });
 
 
+// Shortened URL redirect page
 app.get("/u/:id", (req, res) => {
 
   // Store the short URL ID in a variable
-  let id = req.params.id;
+  const id = req.params.id;
 
   // Get the long URL from the database
   const longURL = urlDatabase[id];
@@ -97,6 +125,10 @@ app.get("/u/:id", (req, res) => {
 });
 
 
+
+//---------- POST ROUTES ----------//
+
+// Deleting a shortened URL from the database
 app.post("/urls/:id/delete", (req, res) => {
 
   // Store the id of a URL
@@ -110,6 +142,7 @@ app.post("/urls/:id/delete", (req, res) => {
 });
 
 
+// Adding a shortened URL to the database
 app.post("/urls/:id", (req, res) => {
 
   // Store the id of a URL
@@ -119,12 +152,12 @@ app.post("/urls/:id", (req, res) => {
   urlDatabase[id] = req.body.longURL;
 
   // Redirect to the page with the short URL
-  res.redirect(`/urls/`); 
+  res.redirect('/urls'); 
 });
 
 
+// URL page
 app.post("/urls", (req, res) => {
-  console.log(req.body); // Log the POST request body to the console
 
   // Generate random string
   let id = generateRandomString();
@@ -137,12 +170,13 @@ app.post("/urls", (req, res) => {
 });
 
 
+// Logging in
 app.post("/login", (req, res) => {
   
   // Store the username from the text field
   let username = req.body.username;
 
-  // Set the "username" attribute in the cookie with the username
+  // Store the username in a cookie with the 'username' key
   res.cookie('username', username);
 
   // Print to the console
@@ -153,6 +187,7 @@ app.post("/login", (req, res) => {
 });
 
 
+// Logging out
 app.post("/logout", (req, res) => {
 
   // Clear the username cookie
@@ -163,10 +198,29 @@ app.post("/logout", (req, res) => {
 });
 
 
-
+// Registering a new user
 app.post("/register", (req, res) => {
 
-  console.log("Register clicked");
+  // Store the user's ID, email and password
+  let userId = generateRandomString();
+  let email = req.body.email;
+  let password = req.body.password;
+
+  // Add the user to the users database object
+  users[userId] = { "id": userId, "email": email, "password": password};
+
+  // Store the user info in a variable
+  let user =  { "id": userId, "email": email, "password": password};
+
+  // Store the user and email in cookies
+  res.cookie("user_id", userId);
+  res.cookie("email", email);
+
+  // Print user to the console
+  console.log("User stored in cookie: " + req.cookies.email)
+  
+  // Redirect to the URLs page
+  res.redirect("/urls");
 });
 
 
