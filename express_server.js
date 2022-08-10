@@ -49,6 +49,14 @@ app.get("/hello", (req, res) => {
   res.send("<html><body>Hello <b>World</b></body></html>\n");
 });
 
+
+app.get("/register", (req, res) => {
+
+  // Render the register.ejs page
+  res.render("register");
+});
+
+
 app.get("/urls", (req, res) => {
 
   // Allow access to the username stored in cookies
@@ -153,6 +161,15 @@ app.post("/logout", (req, res) => {
   // Redirect to the URLs page
   res.redirect("/urls");
 });
+
+
+
+app.post("/register", (req, res) => {
+
+  console.log("Register clicked");
+});
+
+
 
 
 
