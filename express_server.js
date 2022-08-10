@@ -79,10 +79,14 @@ app.get("/register", (req, res) => {
 // URL Page with all URLs for the user
 app.get("/urls", (req, res) => {
 
-  // Store the username and the urlDatabase in templateVars
-  // The entire database is stored so it can be displayed in the URLs page
+  // Get the user_id from cookies and user info from the users database
+  let user_id = req.cookies["user_id"];
+  let user = users[user_id];
+
+  // Store the user and the urlDatabase in templateVars
+  // The entire url database is stored so it can be displayed in the URLs page
   const templateVars = { 
-    username: req.cookies["username"],
+    user: user,
     urls: urlDatabase 
   };
 
@@ -94,9 +98,13 @@ app.get("/urls", (req, res) => {
 // New URL page
 app.get("/urls/new", (req, res) => {
 
-  // Store the username stored in cookies
+  // Get the user_id from cookies and user info from the users database
+  let user_id = req.cookies["user_id"];
+  let user = users[user_id];
+
+  // Store the user in templateVars
   const templateVars = { 
-    username: req.cookies["username"],
+    user: user
   };
 
   // Render the /urls/new page by passing the data in templateVars
