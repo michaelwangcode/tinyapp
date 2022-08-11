@@ -192,7 +192,6 @@ app.get("/urls", (req, res) => {
   } else {
     res.status(403).send('Must be logged in to view URLs');
   }
-
 });
 
 
@@ -225,8 +224,33 @@ app.get("/urls/new", (req, res) => {
 
 // Page for editing shortened URL
 app.get("/urls/:id", (req, res) => {
-  const templateVars = { id: req.params.id, longURL: urlDatabase[req.params.id].longURL };
-  res.render("urls_show", templateVars);
+
+  // Get the user id from cookies
+  let userId = req.cookies["user_id"];
+
+  // Store the shortened URL ID in a variable
+  const id = req.params.id;
+
+  // If the user is logged in, and the URL belongs to them,
+  if (userId === urlDatabase[id].userID) {
+
+    // Store the shortened URL ID and the long URL ID
+    const templateVars = { 
+      id: id, 
+      longURL: urlDatabase[id].longURL 
+    };
+
+    // Render the urls_show page by passing the data in templateVars
+    res.render("urls_show", templateVars);
+  
+  // If the user does not own the URL, send a 403 status code
+  } else if (userId && userId !== urlDatabase[id].userID) {
+    res.status(403).send('You do not have permission to edit this URL');
+
+  // If the user is not logged in, send a 403 status code
+  } else {
+    res.status(403).send('Must be logged in to edit URLs');
+  }
 });
 
 
