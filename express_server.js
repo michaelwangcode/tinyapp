@@ -232,14 +232,25 @@ app.post("/urls/:id", (req, res) => {
 // URL page
 app.post("/urls", (req, res) => {
 
-  // Generate random string
-  let id = generateRandomString();
+  // Get the user id from cookies
+  let userId = req.cookies["user_id"];
 
-  // Store the long URL in the database with a random string
-  urlDatabase[id] = req.body.longURL;
+  // If the user is logged in, shorten the URL
+  if (userId !== undefined) {
+    
+      // Generate random string
+    let id = generateRandomString();
 
-  // Redirect to the page with the URL ID
-  res.redirect(`/urls/${id}`); 
+    // Store the long URL in the database with a random string
+    urlDatabase[id] = req.body.longURL;
+
+    // Redirect to the page with the URL ID
+    res.redirect(`/urls/${id}`); 
+
+  // If the user is not logged in, send a 403 status code
+  } else {
+    res.status(403).send('Must be logged in to shorten URLs');
+  }
 });
 
 
