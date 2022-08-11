@@ -100,16 +100,34 @@ app.get("/hello", (req, res) => {
 // Registration page
 app.get("/register", (req, res) => {
 
-  // Render the register.ejs page
-  res.render("register");
+  // Get the user id from cookies
+  let userId = req.cookies["user_id"];
+
+  // If the user is logged in, redirect to the URL page
+  if (userId !== undefined) {
+    res.redirect('/urls');
+
+  // If the user is not logged in, render the register.ejs page
+  } else {
+    res.render("register");
+  }
 });
 
 
 // Login page
 app.get("/login", (req, res) => {
 
-  // Render the login.ejs page
-  res.render("login");
+  // Get the user id from cookies
+  let userId = req.cookies["user_id"];
+
+  // If the user is logged in, redirect to the URL page
+  if (userId !== undefined) {
+    res.redirect('/urls');
+
+  // If the user is not logged in, render the login.ejs page
+  } else {
+    res.render("login");
+  }
 });
 
 
@@ -227,12 +245,10 @@ app.post("/login", (req, res) => {
 
   // If the user does not exist, send a 403 status code
   if (user === null) {
-
     res.status(400).send('Invalid email/password combination');
 
   // If the user exists but the password does not match, send a 403 status code
   } else if (getUserByEmail(email).password !== password) {
-
     res.status(400).send('Invalid email/password combination');
 
   // If the info is valid,
