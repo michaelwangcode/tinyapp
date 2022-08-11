@@ -18,6 +18,10 @@ const urlDatabase = {
     longURL: "http://www.google.com",
     userID: "userRandomID",
   },
+  "s8hE2i": { 
+    longURL: "http://www.google.ca",
+    userID: "user2RandomID",
+  },
 };
 
 // Database object for storing user info
@@ -73,7 +77,7 @@ function getUserByEmail(email) {
 // Returns true if an email is taken
 function isEmailTaken(email) {
 
-  // Iterate through the database
+  // Iterate through the users database
   for (let userId in users) {
     if (users[userId].email === email) {
       return true;
@@ -81,6 +85,27 @@ function isEmailTaken(email) {
   }
 
   return false;
+}
+
+
+// Returns an object of short URLs made by a specific user
+function urlsForUser(id) {
+
+  // Create an object for storing url IDs
+  let urlsMadeByUser = {};
+
+  // Iterate through the url database
+  for (let url in urlDatabase) {
+
+    // If the user ID for the url matches,
+    if (urlDatabase[url].userID === id) {
+
+      // Copy the info for the url into the new object
+      urlsMadeByUser[url] = {"longURL": urlDatabase[url].longURL, "userID": urlDatabase[url].userID};
+    }
+  }
+
+  return urlsMadeByUser;
 }
 
 
@@ -145,17 +170,19 @@ app.get("/urls", (req, res) => {
   // Get the user id from cookies
   let userId = req.cookies["user_id"];
 
-  // If the user is logged in, render the url page
+  // If the user is logged in, render the URL page only with links they created
   if (userId !== undefined) {
 
     // Get the user info from the users database
     let user = users[userId];
 
-    // Store the user and the urlDatabase in templateVars
-    // The entire url database is stored so it can be displayed in the URLs page
+    // Using the urlsForUser function, filter the URL database for only URLs from the current user
+    let urlDatabaseForUser = urlsForUser(userId);
+
+    // Store the user and the user's URLs in templateVars
     const templateVars = { 
       user: user,
-      urls: urlDatabase 
+      urls: urlDatabaseForUser 
     };
 
     // Render the /urls page by passing the data in templateVars
@@ -321,7 +348,7 @@ app.post("/logout", (req, res) => {
   res.clearCookie('user_id');
 
   // Redirect to the URLs page
-  res.redirect("/urls");
+  res.redirect("/login");
 });
 
 
