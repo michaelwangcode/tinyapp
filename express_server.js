@@ -231,8 +231,12 @@ app.get("/urls/:id", (req, res) => {
   // Store the shortened URL ID in a variable
   const id = req.params.id;
 
+  // If the shortened url ID does not exist, send a 403 status code
+  if (urlDatabase[id] === undefined) {
+    res.status(403).send('This URL does not exist');
+  
   // If the user is logged in, and the URL belongs to them,
-  if (userId === urlDatabase[id].userID) {
+  } else if (userId === urlDatabase[id].userID) {
 
     // Store the shortened URL ID and the long URL ID
     const templateVars = { 
@@ -249,7 +253,7 @@ app.get("/urls/:id", (req, res) => {
 
   // If the user is not logged in, send a 403 status code
   } else {
-    res.status(403).send('Must be logged in to edit URLs');
+    res.status(403).send('You must be logged in to edit URLs');
   }
 });
 
@@ -282,14 +286,33 @@ app.get("/u/:id", (req, res) => {
 // Deleting a shortened URL from the database
 app.post("/urls/:id/delete", (req, res) => {
 
+  // Get the user id from cookies
+  let userId = req.cookies["user_id"];
+
   // Store the id of a URL
   let id = req.params.id;
 
-  // Delete the id and URL from the database
-  delete urlDatabase[id];
+  // If the shortened url ID does not exist, send a 403 status code
+  if (urlDatabase[id] === undefined) {
+    res.status(403).send('This URL does not exist');
 
-  // Redirect to the urls page
-  res.redirect('/urls');
+  // If the user is logged in, and the URL belongs to them,
+  } else if (userId === urlDatabase[id].userID) {
+
+    // Delete the id and URL from the database
+    delete urlDatabase[id];
+
+    // Redirect to the urls page
+    res.redirect('/urls');
+
+  // If the user does not own the URL, send a 403 status code
+  } else if (userId && userId !== urlDatabase[id].userID) {
+    res.status(403).send('You do not have permission to delete this URL');
+
+  // If the user is not logged in, send a 403 status code
+  } else {
+    res.status(403).send('You must be logged in to delete URLs');
+  }
 });
 
 
@@ -302,11 +325,27 @@ app.post("/urls/:id", (req, res) => {
   // Store the id of a URL
   let id = req.params.id;
 
-  // Set the longURL to the new longURL
-  urlDatabase[id] = {"userID": userId, "longURL": req.body.longURL};
+  // If the shortened url ID does not exist, send a 403 status code
+  if (urlDatabase[id] === undefined) {
+    res.status(403).send('This URL does not exist');
 
-  // Redirect to the page with the short URL
-  res.redirect('/urls'); 
+  // If the user is logged in, and the URL belongs to them,
+  } else if (userId === urlDatabase[id].userID) {
+    
+    // Set the longURL to the new longURL
+    urlDatabase[id] = {"userID": userId, "longURL": req.body.longURL};
+
+    // Redirect to the page with the short URL
+    res.redirect('/urls'); 
+
+  // If the user does not own the URL, send a 403 status code
+  } else if (userId && userId !== urlDatabase[id].userID) {
+    res.status(403).send('You do not have permission to edit this URL');
+
+  // If the user is not logged in, send a 403 status code
+  } else {
+    res.status(403).send('You must be logged in to edit URLs');
+  }
 });
 
 
