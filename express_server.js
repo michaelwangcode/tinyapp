@@ -29,6 +29,8 @@ const users = {
 };
 
 
+//---------- HELPER FUNCTIONS -----------//
+
 // Generate a random string of 6 characters
 function generateRandomString() {
 
@@ -187,14 +189,22 @@ app.get("/urls/:id", (req, res) => {
 // Shortened URL redirect page
 app.get("/u/:id", (req, res) => {
 
-  // Store the short URL ID in a variable
+  // Store the shortened URL ID in a variable
   const id = req.params.id;
 
-  // Get the long URL from the database
-  const longURL = urlDatabase[id];
+  // If the shortened URL ID exists is in the database
+  if (urlDatabase[id] !== undefined) {
 
-  // Redirect to the long URL
-  res.redirect(longURL);
+    // Get the long URL from the database
+    const longURL = urlDatabase[id];
+
+    // Redirect to the long URL
+    res.redirect(longURL);
+
+  // If the URL ID doesn't exist, send a 400 status code
+  } else {
+    res.status(400).send('URL does not exist');
+  }
 });
 
 
@@ -303,11 +313,11 @@ app.post("/register", (req, res) => {
   let email = req.body.email;
   let password = req.body.password;
 
-  // If email or password are blank, send 400 status code
+  // If email or password are blank, send a 400 status code
   if (email === '' || password === '') {
     res.status(400).send('Email and password cannot be blank');
 
-  // If email is taken, send 400 status code
+  // If email is taken, send a 400 status code
   } else if (isEmailTaken(email)) {
     res.status(400).send('This email is already linked to an account');
 
