@@ -10,8 +10,14 @@ app.use(cookieParser()); // Needed to use cookieParser
 
 // Database object for storing urls
 const urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
+  "b2xVn2": { 
+    longURL: "http://www.lighthouselabs.ca",
+    userID: "userRandomID",
+  },
+  "9sm5xK": { 
+    longURL: "http://www.google.com",
+    userID: "userRandomID",
+  },
 };
 
 // Database object for storing user info
@@ -181,7 +187,7 @@ app.get("/urls/new", (req, res) => {
 
 // Page for editing shortened URL
 app.get("/urls/:id", (req, res) => {
-  const templateVars = { id: req.params.id, longURL: urlDatabase[req.params.id] };
+  const templateVars = { id: req.params.id, longURL: urlDatabase[req.params.id].longURL };
   res.render("urls_show", templateVars);
 });
 
@@ -196,7 +202,7 @@ app.get("/u/:id", (req, res) => {
   if (urlDatabase[id] !== undefined) {
 
     // Get the long URL from the database
-    const longURL = urlDatabase[id];
+    const longURL = urlDatabase[id].longURL;
 
     // Redirect to the long URL
     res.redirect(longURL);
@@ -228,14 +234,17 @@ app.post("/urls/:id/delete", (req, res) => {
 // Adding a shortened URL to the database
 app.post("/urls/:id", (req, res) => {
 
-    // Store the id of a URL
-    let id = req.params.id;
+  // Get the user id from cookies
+  let userId = req.cookies["user_id"];
+  
+  // Store the id of a URL
+  let id = req.params.id;
 
-    // Set the longURL to the new longURL
-    urlDatabase[id] = req.body.longURL;
+  // Set the longURL to the new longURL
+  urlDatabase[id] = {"userID": userId, "longURL": req.body.longURL};
 
-    // Redirect to the page with the short URL
-    res.redirect('/urls'); 
+  // Redirect to the page with the short URL
+  res.redirect('/urls'); 
 });
 
 
@@ -252,7 +261,7 @@ app.post("/urls", (req, res) => {
     let id = generateRandomString();
 
     // Store the long URL in the database with a random string
-    urlDatabase[id] = req.body.longURL;
+    urlDatabase[id] = {"userID": userId, "longURL": req.body.longURL};
 
     // Redirect to the page with the URL ID
     res.redirect(`/urls/${id}`); 
