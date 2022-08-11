@@ -142,19 +142,30 @@ app.get("/login", (req, res) => {
 // URL Page with all URLs for the user
 app.get("/urls", (req, res) => {
 
-  // Get the user_id from cookies and user info from the users database
-  let user_id = req.cookies["user_id"];
-  let user = users[user_id];
+  // Get the user id from cookies
+  let userId = req.cookies["user_id"];
 
-  // Store the user and the urlDatabase in templateVars
-  // The entire url database is stored so it can be displayed in the URLs page
-  const templateVars = { 
-    user: user,
-    urls: urlDatabase 
-  };
+  // If the user is logged in, render the url page
+  if (userId !== undefined) {
 
-  // Render the /urls page by passing the data in templateVars
-  res.render("urls_index", templateVars);
+    // Get the user info from the users database
+    let user = users[userId];
+
+    // Store the user and the urlDatabase in templateVars
+    // The entire url database is stored so it can be displayed in the URLs page
+    const templateVars = { 
+      user: user,
+      urls: urlDatabase 
+    };
+
+    // Render the /urls page by passing the data in templateVars
+    res.render("urls_index", templateVars);
+
+  // If the user is not logged in, send a 403 status code
+  } else {
+    res.status(403).send('Must be logged in to view URLs');
+  }
+
 });
 
 
