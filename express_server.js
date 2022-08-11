@@ -218,18 +218,40 @@ app.post("/urls", (req, res) => {
 // Logging in
 app.post("/login", (req, res) => {
   
- /*
-  // Redirect to the URLs page
-  res.redirect("/urls");
-  */
+  // Store the email and password from the input form
+  email = req.body.email;
+  password = req.body.password;
+
+  // Get user id by email
+  let user = getUserByEmail(email);
+
+  // If the user does not exist, send a 403 status code
+  if (user === null) {
+
+    res.status(400).send('Invalid email/password combination');
+
+  // If the user exists but the password does not match, send a 403 status code
+  } else if (getUserByEmail(email).password !== password) {
+
+    res.status(400).send('Invalid email/password combination');
+
+  // If the info is valid,
+  } else {
+
+    // Store the user in cookies
+    res.cookie("user_id", user.id);
+
+    // Redirect to the URLs page
+    res.redirect("/urls");
+  }
 });
 
 
 // Logging out
 app.post("/logout", (req, res) => {
 
-  // Clear the username cookie
-  res.clearCookie('username');
+  // Clear the user ID cookie
+  res.clearCookie('user_id');
 
   // Redirect to the URLs page
   res.redirect("/urls");
@@ -258,7 +280,7 @@ app.post("/register", (req, res) => {
     // Add the user to the users database object
     users[userId] = { "id": userId, "email": email, "password": password};
 
-    // Store the user and email in cookies
+    // Store the user id in cookies
     res.cookie("user_id", userId);
   
     // Redirect to the URLs page
