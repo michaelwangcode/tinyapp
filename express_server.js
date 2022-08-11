@@ -153,17 +153,27 @@ app.get("/urls", (req, res) => {
 // New URL page
 app.get("/urls/new", (req, res) => {
 
-  // Get the user_id from cookies and user info from the users database
-  let user_id = req.cookies["user_id"];
-  let user = users[user_id];
+  // Get the user id from cookies
+  let userId = req.cookies["user_id"];
 
-  // Store the user in templateVars
-  const templateVars = { 
-    user: user
-  };
+  // If the user is logged in, render the new url page
+  if (userId !== undefined) {
+    
+    // Get the user info from the users database
+    let user = users[userId];
 
-  // Render the /urls/new page by passing the data in templateVars
-  res.render("urls_new", templateVars);
+    // Store the user in templateVars
+    const templateVars = { 
+      user: user
+    };
+
+    // Render the /urls/new page by passing the data in templateVars
+    res.render("urls_new", templateVars);
+
+  // If the user is not logged in, redirect to the login page
+  } else {
+    res.redirect('/login');
+  }
 });
 
 
@@ -208,14 +218,14 @@ app.post("/urls/:id/delete", (req, res) => {
 // Adding a shortened URL to the database
 app.post("/urls/:id", (req, res) => {
 
-  // Store the id of a URL
-  let id = req.params.id;
+    // Store the id of a URL
+    let id = req.params.id;
 
-  // Set the longURL to the new longURL
-  urlDatabase[id] = req.body.longURL;
+    // Set the longURL to the new longURL
+    urlDatabase[id] = req.body.longURL;
 
-  // Redirect to the page with the short URL
-  res.redirect('/urls'); 
+    // Redirect to the page with the short URL
+    res.redirect('/urls'); 
 });
 
 
@@ -245,11 +255,11 @@ app.post("/login", (req, res) => {
 
   // If the user does not exist, send a 403 status code
   if (user === null) {
-    res.status(400).send('Invalid email/password combination');
+    res.status(403).send('Invalid email/password combination');
 
   // If the user exists but the password does not match, send a 403 status code
   } else if (getUserByEmail(email).password !== password) {
-    res.status(400).send('Invalid email/password combination');
+    res.status(403).send('Invalid email/password combination');
 
   // If the info is valid,
   } else {
