@@ -27,8 +27,12 @@
         </div>
       <% } else { %>  
         <div style="margin-right: 0; margin-left: auto">
-          <form method="POST" action="/login">
-            <span style="margin-right: 10px">Not logged in as user</span>
+          <form method="GET" action="/register">
+            <button style="color: black; background-color: transparent; height: 35px; width: 90px; border: 1px solid black; border-radius: 5px; margin-right: 10px">Register</button>
+          </form>
+        </div>
+        <div>
+          <form method="GET" action="/login">
             <button style="color: black; background-color: transparent; height: 35px; width: 90px; border: 1px solid black; border-radius: 5px;">Login</button>
           </form>
         </div>

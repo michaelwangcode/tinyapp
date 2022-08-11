@@ -48,6 +48,35 @@ function generateRandomString() {
 }
 
 
+// Return an user in the database given an email
+function getUserByEmail(email) {
+
+  // Iterate through the database
+  for (let userId in users) {
+    if (users[userId].email === email) {
+      return users[userId];
+    }
+  }
+
+  return null;
+}
+
+
+// Returns true if an email is taken
+function isEmailTaken(email) {
+
+  // Iterate through the database
+  for (let userId in users) {
+    if (users[userId].email === email) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+
+
 //---------- GET ROUTES ----------//
 
 // Home page
@@ -73,6 +102,14 @@ app.get("/register", (req, res) => {
 
   // Render the register.ejs page
   res.render("register");
+});
+
+
+// Login page
+app.get("/login", (req, res) => {
+
+  // Render the login.ejs page
+  res.render("login");
 });
 
 
@@ -181,17 +218,10 @@ app.post("/urls", (req, res) => {
 // Logging in
 app.post("/login", (req, res) => {
   
-  // Store the username from the text field
-  let username = req.body.username;
-
-  // Store the username in a cookie with the 'username' key
-  res.cookie('username', username);
-
-  // Print to the console
-  console.log("Username stored in cookie: " + req.cookies.username);
-
+ /*
   // Redirect to the URLs page
   res.redirect("/urls");
+  */
 });
 
 
@@ -214,21 +244,26 @@ app.post("/register", (req, res) => {
   let email = req.body.email;
   let password = req.body.password;
 
-  // Add the user to the users database object
-  users[userId] = { "id": userId, "email": email, "password": password};
+  // If email or password are blank, send 400 status code
+  if (email === '' || password === '') {
+    res.status(400).send('Email and password cannot be blank');
 
-  // Store the user info in a variable
-  let user =  { "id": userId, "email": email, "password": password};
+  // If email is taken, send 400 status code
+  } else if (isEmailTaken(email)) {
+    res.status(400).send('This email is already linked to an account');
 
-  // Store the user and email in cookies
-  res.cookie("user_id", userId);
-  res.cookie("email", email);
+  // Otherwise, store the email and password
+  } else {
 
-  // Print user to the console
-  console.log("User stored in cookie: " + req.cookies.email)
+    // Add the user to the users database object
+    users[userId] = { "id": userId, "email": email, "password": password};
+
+    // Store the user and email in cookies
+    res.cookie("user_id", userId);
   
-  // Redirect to the URLs page
-  res.redirect("/urls");
+    // Redirect to the URLs page
+    res.redirect("/urls");
+  }
 });
 
 
