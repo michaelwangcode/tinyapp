@@ -77,9 +77,16 @@ app.get("/register", (req, res) => {
   if (userId !== undefined) {
     res.redirect('/urls');
 
-  // If the user is not logged in, render the register.ejs page
+  // If the user is not logged in, 
   } else {
-    res.render("register");
+
+    // Store the userId in templateVars
+    const templateVars = { 
+      user: userId
+    };
+
+    // Render the register page
+    res.render("register", templateVars);
   }
 });
 
@@ -94,9 +101,16 @@ app.get("/login", (req, res) => {
   if (userId !== undefined) {
     res.redirect('/urls');
 
-  // If the user is not logged in, render the login.ejs page
+  // If the user is not logged in, 
   } else {
-    res.render("login");
+
+    // Store the userId in templateVars
+    const templateVars = { 
+      user: userId
+    };
+
+    // Render the login page by passing the data in templateVars
+    res.render("login", templateVars);
   }
 });
 
@@ -122,7 +136,7 @@ app.get("/urls", (req, res) => {
       urls: urlDatabaseForUser 
     };
 
-    // Render the /urls page by passing the data in templateVars
+    // Render the urls page by passing the data in templateVars
     res.render("urls_index", templateVars);
 
   // If the user is not logged in, send a 403 status code
@@ -149,7 +163,7 @@ app.get("/urls/new", (req, res) => {
       user: user
     };
 
-    // Render the /urls/new page by passing the data in templateVars
+    // Render the urls/new page by passing the data in templateVars
     res.render("urls_new", templateVars);
 
   // If the user is not logged in, redirect to the login page
