@@ -1,5 +1,6 @@
 const express = require("express");
 const cookieParser = require('cookie-parser');
+const bcrypt = require("bcryptjs");
 const app = express();
 const PORT = 8080; // default port 8080
 
@@ -29,12 +30,12 @@ const users = {
   userRandomID: {
     id: "userRandomID",
     email: "user@example.com",
-    password: "purple-monkey-dinosaur",
+    password: "$2a$10$sHGP3kw9kpsZnybB6GaxC.fsBldqczM5rLKDb5Pmq1DOiBuGx0Zgq", // purple-monkey-dinosaur
   },
   user2RandomID: {
     id: "user2RandomID",
     email: "user2@example.com",
-    password: "dishwasher-funk",
+    password: "$2a$10$Mq.eGPk2CdKk5zzKxPheOuA0ssr3Y6JVK8lTSHO0EgrMUHQZ1axHG", // dishwasher-funk
   },
 };
 
@@ -378,22 +379,30 @@ app.post("/urls", (req, res) => {
 app.post("/login", (req, res) => {
   
   // Store the email and password from the input form
-  email = req.body.email;
-  password = req.body.password;
+  let emailInput = req.body.email;
+  let passwordInput = req.body.password;
 
-  // Get user id by email
-  let user = getUserByEmail(email);
+  // Get user id from users database using inputted email
+  let user = getUserByEmail(emailInput);
 
   // If the user does not exist, send a 403 status code
   if (user === null) {
-    res.status(403).send('Invalid email/password combination');
+    res.status(403).send('User not found');
+  }
+
+
+  // Get the stored hashed password from the database
+  const storedPassword = getUserByEmail(emailInput).password;
+
+  // Store whether the password is correct using bcryptjs
+  let isPasswordCorrect =  bcrypt.compareSync(passwordInput, storedPassword);
 
   // If the user exists but the password does not match, send a 403 status code
-  } else if (getUserByEmail(email).password !== password) {
+  if (!isPasswordCorrect) {
     res.status(403).send('Invalid email/password combination');
 
-  // If the info is valid,
-  } else {
+  // If the user exists and the password matches,
+  } else if (isPasswordCorrect) {
 
     // Store the user in cookies
     res.cookie("user_id", user.id);
@@ -423,6 +432,10 @@ app.post("/register", (req, res) => {
   let email = req.body.email;
   let password = req.body.password;
 
+  // Hash the password using bcryptjs
+  let hashedPassword = bcrypt.hashSync(password, 10);
+
+
   // If email or password are blank, send a 400 status code
   if (email === '' || password === '') {
     res.status(400).send('Email and password cannot be blank');
@@ -434,8 +447,8 @@ app.post("/register", (req, res) => {
   // Otherwise, store the email and password
   } else {
 
-    // Add the user to the users database object
-    users[userId] = { "id": userId, "email": email, "password": password};
+    // Add the user info to the users database object
+    users[userId] = { "id": userId, "email": email, "password": hashedPassword};
 
     // Store the user id in cookies
     res.cookie("user_id", userId);
