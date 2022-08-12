@@ -1,12 +1,18 @@
 const express = require("express");
-const cookieParser = require('cookie-parser');
+const cookieSession = require('cookie-session');
 const bcrypt = require("bcryptjs");
 const app = express();
 const PORT = 8080; // default port 8080
 
 app.set("view engine", "ejs");
 app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser()); // Needed to use cookieParser
+app.use(cookieSession({
+  name: 'session',
+  keys: ['abcde'],
+
+  // Cookie Options
+  maxAge: 24 * 60 * 60 * 1000 // 24 hours
+}))
 
 
 // Database object for storing urls
@@ -135,7 +141,7 @@ app.get("/hello", (req, res) => {
 app.get("/register", (req, res) => {
 
   // Get the user id from cookies
-  let userId = req.cookies["user_id"];
+  let userId = req.session.user_id;
 
   // If the user is logged in, redirect to the URL page
   if (userId !== undefined) {
@@ -152,7 +158,7 @@ app.get("/register", (req, res) => {
 app.get("/login", (req, res) => {
 
   // Get the user id from cookies
-  let userId = req.cookies["user_id"];
+  let userId = req.session.user_id;
 
   // If the user is logged in, redirect to the URL page
   if (userId !== undefined) {
@@ -169,7 +175,7 @@ app.get("/login", (req, res) => {
 app.get("/urls", (req, res) => {
 
   // Get the user id from cookies
-  let userId = req.cookies["user_id"];
+  let userId = req.session.user_id;
 
   // If the user is logged in, render the URL page only with links they created
   if (userId !== undefined) {
@@ -200,7 +206,7 @@ app.get("/urls", (req, res) => {
 app.get("/urls/new", (req, res) => {
 
   // Get the user id from cookies
-  let userId = req.cookies["user_id"];
+  let userId = req.session.user_id;
 
   // If the user is logged in, render the new url page
   if (userId !== undefined) {
@@ -227,7 +233,7 @@ app.get("/urls/new", (req, res) => {
 app.get("/urls/:id", (req, res) => {
 
   // Get the user id from cookies
-  let userId = req.cookies["user_id"];
+  let userId = req.session.user_id;
 
   // Store the shortened URL ID in a variable
   const id = req.params.id;
@@ -276,7 +282,7 @@ app.get("/u/:id", (req, res) => {
 
   // If the URL ID doesn't exist, send a 400 status code
   } else {
-    res.status(400).send('URL does not exist');
+    res.status(400).send('This URL does not exist or is formatted incorrectly');
   }
 });
 
@@ -288,7 +294,7 @@ app.get("/u/:id", (req, res) => {
 app.post("/urls/:id/delete", (req, res) => {
 
   // Get the user id from cookies
-  let userId = req.cookies["user_id"];
+  let userId = req.session.user_id;
 
   // Store the id of a URL
   let id = req.params.id;
@@ -321,7 +327,7 @@ app.post("/urls/:id/delete", (req, res) => {
 app.post("/urls/:id", (req, res) => {
 
   // Get the user id from cookies
-  let userId = req.cookies["user_id"];
+  let userId = req.session.user_id;
   
   // Store the id of a URL
   let id = req.params.id;
@@ -354,7 +360,7 @@ app.post("/urls/:id", (req, res) => {
 app.post("/urls", (req, res) => {
 
   // Get the user id from cookies
-  let userId = req.cookies["user_id"];
+  let userId = req.session.user_id;
 
   // If the user is logged in, shorten the URL
   if (userId !== undefined) {
@@ -405,8 +411,8 @@ app.post("/login", (req, res) => {
   } else if (isPasswordCorrect) {
 
     // Store the user in cookies
-    res.cookie("user_id", user.id);
-
+    req.session.user_id = user.id;
+    
     // Redirect to the URLs page
     res.redirect("/urls");
   }
@@ -417,7 +423,7 @@ app.post("/login", (req, res) => {
 app.post("/logout", (req, res) => {
 
   // Clear the user ID cookie
-  res.clearCookie('user_id');
+  req.session = null;
 
   // Redirect to the URLs page
   res.redirect("/login");
@@ -451,8 +457,8 @@ app.post("/register", (req, res) => {
     users[userId] = { "id": userId, "email": email, "password": hashedPassword};
 
     // Store the user id in cookies
-    res.cookie("user_id", userId);
-  
+    req.session.user_id = userId;
+
     // Redirect to the URLs page
     res.redirect("/urls");
   }
