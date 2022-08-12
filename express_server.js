@@ -231,14 +231,6 @@ app.get("/u/:id", (req, res) => {
 });
 
 
-/*
-// URLs as JSON page - Removed for security purposes
-app.get("/urls.json", (req, res) => {
-  res.json(urlDatabase);
-});
-*/
-
-
 //---------- POST ROUTES ----------//
 
 // Deleting a shortened URL from the database
