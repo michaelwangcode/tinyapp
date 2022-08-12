@@ -51,19 +51,18 @@ const urlDatabase = {
 
 // Home page
 app.get("/", (req, res) => {
-  res.send("Hello!");
-});
 
+  // Get the user id from cookies
+  let userId = req.session.user_id;
 
-// URLs as JSON page
-app.get("/urls.json", (req, res) => {
-  res.json(urlDatabase);
-});
+  // If the user is logged in, redirect to the URL page
+  if (userId !== undefined) {
+    res.redirect('/urls');
 
-
-// Hello page
-app.get("/hello", (req, res) => {
-  res.send("<html><body>Hello <b>World</b></body></html>\n");
+  // If the user is not logged in, redirect to the login page
+  } else {
+    res.redirect('/login');
+  }
 });
 
 
@@ -231,6 +230,13 @@ app.get("/u/:id", (req, res) => {
   }
 });
 
+
+/*
+// URLs as JSON page - Removed for security purposes
+app.get("/urls.json", (req, res) => {
+  res.json(urlDatabase);
+});
+*/
 
 
 //---------- POST ROUTES ----------//
