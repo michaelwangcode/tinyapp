@@ -9,15 +9,62 @@
       crossorigin="anonymous"
     />
     <title>Login - TinyApp</title>
+    <!-- W3Schools Stacked Form CSS Template -->
+    <style>
+      input[type=email], select {
+        width: 100%;
+        padding: 12px 20px;
+        margin: 8px 0;
+        display: block;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+      }
+
+      input[type=password], select {
+        width: 100%;
+        padding: 12px 20px;
+        margin: 8px 0;
+        display: block;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+      }
+
+      input[type=submit] {
+        width: 100%;
+        background-color: #0D61FE;
+        color: white;
+        padding: 14px 20px;
+        margin: 8px 0;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+
+      div.container {
+        border-radius: 5px;
+        background-color: white;
+        padding: 20px;
+      }
+
+      label.header {
+        font-weight: 500;
+      }
+    </style>
   </head>
   <body>
     <!-- Add the header -->
     <%- include('partials/_header') %>
-    <span>Log In</span>
-    <form class="form-inline" action="/login" method="POST">
-      <div>Email: <input type="email" name="email" /></div>
-      <div>Password: <input type="password" name="password"/></div>
-      <div><button>Log In</button></div>
-    </form>
+    <div class="container">
+      <h2>Log In</h2>
+      <form class="form-inline" action="/login" method="POST">
+        <label class="header">Email Address</label>
+        <input type="email" name="email" placeholder="Enter email">
+        <label class="header">Password</label>
+        <input type="password" name="password" placeholder="Password">
+        <input type="submit" value="Log In">
+      </form>
+    </div>
   </body>
 </html>
