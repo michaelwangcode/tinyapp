@@ -127,7 +127,7 @@ app.get("/urls", (req, res) => {
 
   // If the user is not logged in, send a 403 status code
   } else {
-    res.status(403).send('Must be logged in to view URLs');
+    res.status(403).send('You must be logged in to view URLs');
   }
 });
 
@@ -175,8 +175,9 @@ app.get("/urls/:id", (req, res) => {
   // If the user is logged in, and the URL belongs to them,
   } else if (userId === urlDatabase[id].userID) {
 
-    // Store the shortened URL ID and the long URL ID
+    // Store the user ID, shortened URL ID and the long URL ID
     const templateVars = { 
+      user: userId,
       id: id, 
       longURL: urlDatabase[id].longURL 
     };
@@ -306,7 +307,7 @@ app.post("/urls", (req, res) => {
 
   // If the user is not logged in, send a 403 status code
   } else {
-    res.status(403).send('Must be logged in to shorten URLs');
+    res.status(403).send('You must be logged in to shorten URLs');
   }
 });
 
@@ -400,3 +401,6 @@ app.post("/register", (req, res) => {
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
+
+
+// Type 'npm start' in terminal to run app
