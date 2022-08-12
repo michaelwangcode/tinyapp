@@ -13,7 +13,7 @@ app.use(cookieSession({
 
   // Cookie Options
   maxAge: 24 * 60 * 60 * 1000 // 24 hours
-}))
+}));
 
 
 // Database object for storing user info
@@ -32,15 +32,15 @@ const users = {
 
 // Database object for storing urls
 const urlDatabase = {
-  "b2xVn2": { 
+  "b2xVn2": {
     longURL: "http://www.lighthouselabs.ca",
     userID: "userRandomID",
   },
-  "9sm5xK": { 
+  "9sm5xK": {
     longURL: "http://www.google.com",
     userID: "userRandomID",
   },
-  "s8hE2i": { 
+  "s8hE2i": {
     longURL: "http://www.google.ca",
     userID: "user2RandomID",
   },
@@ -76,11 +76,11 @@ app.get("/register", (req, res) => {
   if (userId !== undefined) {
     res.redirect('/urls');
 
-  // If the user is not logged in, 
+  // If the user is not logged in,
   } else {
 
     // Store the userId in templateVars
-    const templateVars = { 
+    const templateVars = {
       user: userId
     };
 
@@ -100,11 +100,11 @@ app.get("/login", (req, res) => {
   if (userId !== undefined) {
     res.redirect('/urls');
 
-  // If the user is not logged in, 
+  // If the user is not logged in,
   } else {
 
     // Store the userId in templateVars
-    const templateVars = { 
+    const templateVars = {
       user: userId
     };
 
@@ -130,9 +130,9 @@ app.get("/urls", (req, res) => {
     let urlDatabaseForUser = urlsForUser(userId, urlDatabase);
 
     // Store the user and the user's URLs in templateVars
-    const templateVars = { 
+    const templateVars = {
       user: user,
-      urls: urlDatabaseForUser 
+      urls: urlDatabaseForUser
     };
 
     // Render the urls page by passing the data in templateVars
@@ -158,7 +158,7 @@ app.get("/urls/new", (req, res) => {
     let user = users[userId];
 
     // Store the user in templateVars
-    const templateVars = { 
+    const templateVars = {
       user: user
     };
 
@@ -189,10 +189,10 @@ app.get("/urls/:id", (req, res) => {
   } else if (userId === urlDatabase[id].userID) {
 
     // Store the user ID, shortened URL ID and the long URL ID
-    const templateVars = { 
+    const templateVars = {
       user: userId,
-      id: id, 
-      longURL: urlDatabase[id].longURL 
+      id: id,
+      longURL: urlDatabase[id].longURL
     };
 
     // Render the urls_show page by passing the data in templateVars
@@ -294,7 +294,7 @@ app.post("/urls/:id", (req, res) => {
     urlDatabase[id] = {"userID": userId, "longURL": req.body.longURL};
 
     // Redirect to the page with the short URL
-    res.redirect('/urls'); 
+    res.redirect('/urls');
 
   // If the user does not own the URL, send a 403 status code
   } else if (userId && userId !== urlDatabase[id].userID) {
@@ -316,14 +316,14 @@ app.post("/urls", (req, res) => {
   // If the user is logged in, shorten the URL
   if (userId !== undefined) {
     
-      // Generate random string
+    // Generate random string
     let id = generateRandomString();
 
     // Store the long URL in the database with a random string
     urlDatabase[id] = {"userID": userId, "longURL": req.body.longURL};
 
     // Redirect to the page with the URL ID
-    res.redirect(`/urls/${id}`); 
+    res.redirect(`/urls/${id}`);
 
   // If the user is not logged in, send a 403 status code
   } else {

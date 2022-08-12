@@ -2,7 +2,7 @@
 
 
 // Generate a random string of 6 characters
-function generateRandomString() {
+let generateRandomString = function() {
 
   // Store all letters
   let letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -17,11 +17,11 @@ function generateRandomString() {
   }
 
   return resultString;
-}
+};
 
 
 // Return an user in the database given an email
-function getUserByEmail(email, userDatabase) {
+let getUserByEmail = function(email, userDatabase) {
 
   // Iterate through the database
   for (let userId in userDatabase) {
@@ -31,11 +31,11 @@ function getUserByEmail(email, userDatabase) {
   }
 
   return undefined;
-}
+};
 
 
 // Returns true if an email is taken
-function isEmailTaken(email, userDatabase) {
+let isEmailTaken = function(email, userDatabase) {
 
   // Iterate through the users database
   for (let userId in userDatabase) {
@@ -45,11 +45,11 @@ function isEmailTaken(email, userDatabase) {
   }
 
   return false;
-}
+};
 
 
 // Returns an object of short URLs made by a specific user
-function urlsForUser(id, urlDatabase) {
+let urlsForUser = function(id, urlDatabase) {
 
   // Create an object for storing url IDs
   let urlsMadeByUser = {};
@@ -66,7 +66,7 @@ function urlsForUser(id, urlDatabase) {
   }
 
   return urlsMadeByUser;
-}
+};
 
 
 // Export the getUserByEmail function
