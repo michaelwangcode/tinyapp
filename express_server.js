@@ -3,6 +3,7 @@ const cookieSession = require('cookie-session');
 const bcrypt = require("bcryptjs");
 const app = express();
 const PORT = 8080; // default port 8080
+const {generateRandomString, getUserByEmail, isEmailTaken, urlsForUser} = require('./helpers');
 
 app.set("view engine", "ejs");
 app.use(express.urlencoded({ extended: true }));
@@ -44,76 +45,6 @@ const users = {
     password: "$2a$10$Mq.eGPk2CdKk5zzKxPheOuA0ssr3Y6JVK8lTSHO0EgrMUHQZ1axHG", // dishwasher-funk
   },
 };
-
-
-//---------- HELPER FUNCTIONS -----------//
-
-// Generate a random string of 6 characters
-function generateRandomString() {
-
-  // Store all letters
-  let letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-  let resultString = "";
-
-  // Loop six times and add a random letter to the result string
-  for (let i = 1; i <= 6; i++) {
-
-    // Return a random number between 0 and 61
-    let index = Math.floor(Math.random() * 61) + 1;
-    resultString += letters[index];
-  }
-
-  return resultString;
-}
-
-
-// Return an user in the database given an email
-function getUserByEmail(email) {
-
-  // Iterate through the database
-  for (let userId in users) {
-    if (users[userId].email === email) {
-      return users[userId];
-    }
-  }
-
-  return null;
-}
-
-
-// Returns true if an email is taken
-function isEmailTaken(email) {
-
-  // Iterate through the users database
-  for (let userId in users) {
-    if (users[userId].email === email) {
-      return true;
-    }
-  }
-
-  return false;
-}
-
-
-// Returns an object of short URLs made by a specific user
-function urlsForUser(id) {
-
-  // Create an object for storing url IDs
-  let urlsMadeByUser = {};
-
-  // Iterate through the url database
-  for (let url in urlDatabase) {
-
-    // If the user ID for the url matches,
-    if (urlDatabase[url].userID === id) {
-
-      // Copy the info for the url into the new object
-      urlsMadeByUser[url] = {"longURL": urlDatabase[url].longURL, "userID": urlDatabase[url].userID};
-    }
-  }
-
-  return urlsMadeByUser;
-}
 
 
 
@@ -184,7 +115,7 @@ app.get("/urls", (req, res) => {
     let user = users[userId];
 
     // Using the urlsForUser function, filter the URL database for only URLs from the current user
-    let urlDatabaseForUser = urlsForUser(userId);
+    let urlDatabaseForUser = urlsForUser(userId, urlDatabase);
 
     // Store the user and the user's URLs in templateVars
     const templateVars = { 
@@ -389,7 +320,7 @@ app.post("/login", (req, res) => {
   let passwordInput = req.body.password;
 
   // Get user id from users database using inputted email
-  let user = getUserByEmail(emailInput);
+  let user = getUserByEmail(emailInput, users);
 
   // If the user does not exist, send a 403 status code
   if (user === null) {
@@ -398,7 +329,7 @@ app.post("/login", (req, res) => {
 
 
   // Get the stored hashed password from the database
-  const storedPassword = getUserByEmail(emailInput).password;
+  const storedPassword = getUserByEmail(emailInput, users).password;
 
   // Store whether the password is correct using bcryptjs
   let isPasswordCorrect =  bcrypt.compareSync(passwordInput, storedPassword);
@@ -447,7 +378,7 @@ app.post("/register", (req, res) => {
     res.status(400).send('Email and password cannot be blank');
 
   // If email is taken, send a 400 status code
-  } else if (isEmailTaken(email)) {
+  } else if (isEmailTaken(email, users)) {
     res.status(400).send('This email is already linked to an account');
 
   // Otherwise, store the email and password
@@ -466,8 +397,7 @@ app.post("/register", (req, res) => {
 
 
 
-
-
+// Listen on PORT 8080
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
