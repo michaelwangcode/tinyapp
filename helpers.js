@@ -30,7 +30,7 @@ function getUserByEmail(email, userDatabase) {
     }
   }
 
-  return null;
+  return undefined;
 }
 
 

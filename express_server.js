@@ -3,7 +3,7 @@ const cookieSession = require('cookie-session');
 const bcrypt = require("bcryptjs");
 const app = express();
 const PORT = 8080; // default port 8080
-const {generateRandomString, getUserByEmail, isEmailTaken, urlsForUser} = require('./helpers');
+const { generateRandomString, getUserByEmail, isEmailTaken, urlsForUser } = require('./helpers');
 
 app.set("view engine", "ejs");
 app.use(express.urlencoded({ extended: true }));
@@ -15,6 +15,20 @@ app.use(cookieSession({
   maxAge: 24 * 60 * 60 * 1000 // 24 hours
 }))
 
+
+// Database object for storing user info
+const users = {
+  userRandomID: {
+    id: "userRandomID",
+    email: "user@example.com",
+    password: "$2a$10$sHGP3kw9kpsZnybB6GaxC.fsBldqczM5rLKDb5Pmq1DOiBuGx0Zgq", // purple-monkey-dinosaur
+  },
+  user2RandomID: {
+    id: "user2RandomID",
+    email: "user2@example.com",
+    password: "$2a$10$Mq.eGPk2CdKk5zzKxPheOuA0ssr3Y6JVK8lTSHO0EgrMUHQZ1axHG", // dishwasher-funk
+  },
+};
 
 // Database object for storing urls
 const urlDatabase = {
@@ -31,21 +45,6 @@ const urlDatabase = {
     userID: "user2RandomID",
   },
 };
-
-// Database object for storing user info
-const users = {
-  userRandomID: {
-    id: "userRandomID",
-    email: "user@example.com",
-    password: "$2a$10$sHGP3kw9kpsZnybB6GaxC.fsBldqczM5rLKDb5Pmq1DOiBuGx0Zgq", // purple-monkey-dinosaur
-  },
-  user2RandomID: {
-    id: "user2RandomID",
-    email: "user2@example.com",
-    password: "$2a$10$Mq.eGPk2CdKk5zzKxPheOuA0ssr3Y6JVK8lTSHO0EgrMUHQZ1axHG", // dishwasher-funk
-  },
-};
-
 
 
 //---------- GET ROUTES ----------//
@@ -323,7 +322,7 @@ app.post("/login", (req, res) => {
   let user = getUserByEmail(emailInput, users);
 
   // If the user does not exist, send a 403 status code
-  if (user === null) {
+  if (user === undefined) {
     res.status(403).send('User not found');
   }
 
