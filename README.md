@@ -17,6 +17,7 @@ Made during Lighthouse Labs (W03D1).
 ### Creating a Shortened URL:
 !["Create"](https://raw.githubusercontent.com/michaelwangcode/tinyapp/master/docs/create1.png)
 
+### Shortened URL Created:
 !["Create"](https://raw.githubusercontent.com/michaelwangcode/tinyapp/master/docs/create2.png)
 
 ### List of shortened URLs:
