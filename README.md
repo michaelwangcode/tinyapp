@@ -9,6 +9,7 @@ Made during Lighthouse Labs (W03D1).
 ## Final Product
 
 !["Screenshot of URLs Page"](https://raw.githubusercontent.com/michaelwangcode/tinyapp/7c9400626bf5cbb98939f76b11c92d27f5a3e2cd/docs/Screenshot%201.png)
+
 !["Screenshot of Registration Page"](https://raw.githubusercontent.com/michaelwangcode/tinyapp/7c9400626bf5cbb98939f76b11c92d27f5a3e2cd/docs/Screenshot%202.png)
 
 ## Dependencies
